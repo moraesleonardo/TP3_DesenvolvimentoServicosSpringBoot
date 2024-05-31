@@ -1,23 +1,26 @@
 package info.moraes.tp3servicospringboot.model;
-import jakarta.persistence.*;
-import java.util.ArrayList;
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.List;
 
-@Entity
+@Document(collection = "alunos")
 public class Aluno {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String nome;
 
-    @OneToMany(mappedBy = "aluno", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Curso> cursos = new ArrayList<>();
+    @DBRef
+    private List<Curso> cursos;
 
-    public Long getId() {
+    // Getters e setters
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

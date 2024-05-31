@@ -1,51 +1,52 @@
 package info.moraes.tp3servicospringboot.Controller;
 
-import java.util.List;
+
 import info.moraes.tp3servicospringboot.model.Aluno;
-import info.moraes.tp3servicospringboot.repository.AlunoRepository;
+import info.moraes.tp3servicospringboot.model.Curso;
+import info.moraes.tp3servicospringboot.service.AlunoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
-
+import java.util.List;
 
 @RestController
 @RequestMapping("/alunos")
-
 public class AlunoController {
+
     @Autowired
-    private AlunoRepository alunoRepository;
+    private AlunoService alunoService;
 
     @GetMapping
-    public List<Aluno> getAllAlunos(){
-        return alunoRepository.findAll();
+    public List<Aluno> getAllAlunos() {
+        return alunoService.buscarAlunos();
     }
 
     @GetMapping("/{id}")
-    public Aluno getAlunoById(@PathVariable Long id) {
-        return alunoRepository.findById(id).orElseThrow(() -> new RuntimeException("Aluno não encontrado " + id));
-
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteAluno(@PathVariable Long id){
-        Aluno aluno = alunoRepository.findById(id).orElseThrow(() -> new RuntimeException("Aluno não encontrado " + id));
-        alunoRepository.delete(aluno);
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Aluno> getAlunoById(@PathVariable String id) {
+        return alunoService.buscarAlunoPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     public Aluno createAluno(@RequestBody Aluno aluno) {
-        return alunoRepository.save(aluno);
+        return alunoService.salvarAluno(aluno);
     }
+
     @PutMapping("/{id}")
-    public Aluno updateAluno(@PathVariable Long id, @RequestBody Aluno aluno){
-        Aluno cli = alunoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Aluno não encontrado"));
-        cli.setNome(aluno.getNome());
-        cli.setCursos(aluno.getCursos());
-        //Vamos ter que implementar depois a atualização dos cursos
-        return alunoRepository.save(cli);
+    public ResponseEntity<Aluno> updateAluno(@PathVariable String id, @RequestBody Aluno aluno) {
+        return ResponseEntity.ok(alunoService.atualizarAluno(id, aluno));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteAluno(@PathVariable String id) {
+        alunoService.deletarAluno(id);
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/{alunoId}/cursos")
+    public Curso addCursoToAluno(@PathVariable String alunoId, @RequestBody Curso curso) {
+        return alunoService.adicionarCurso(alunoId, curso);
     }
 }

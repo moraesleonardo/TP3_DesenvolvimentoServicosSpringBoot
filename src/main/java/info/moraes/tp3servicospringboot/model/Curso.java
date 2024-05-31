@@ -1,26 +1,25 @@
 package info.moraes.tp3servicospringboot.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
 
-@Entity
+@Document(collection = "cursos")
 public class Curso {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private String id;
     private String nome;
+    private String alunoId;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "aluno_id")
-    @JsonBackReference
+    @DBRef
     private Aluno aluno;
 
-    public Long getId() {
+    // Getters e setters
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -32,11 +31,11 @@ public class Curso {
         this.nome = nome;
     }
 
-    public Aluno getAluno() {
-        return aluno;
+    public String getAlunoId() {
+        return alunoId;
     }
 
-    public void setAluno(Aluno aluno) {
-        this.aluno = aluno;
+    public void setAlunoId(String alunoId) {
+        this.alunoId = alunoId;
     }
 }
